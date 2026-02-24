@@ -16,6 +16,12 @@ class Matrix2D:
 
     def __repr__(self):
         return f"Matrix2D({self.components})"
+    
+    def __getitem__(self, index):
+        return self.components[index]
+
+    def __setitem__(self, idx, value):
+        self.components[idx] = value
 
     def __eq__(self, other):
         # This works but maybe come back to later to see if non-generator design on first loop is ok
@@ -54,6 +60,15 @@ class Matrix2D:
     def __rsub__(self, other):
         return self - other
 
+    def __mul__(self, scalar):
+        try:
+            return Matrix2D((scalar * num for num in arr) for arr in self)
+        except TypeError:
+            return NotImplemented
+
+    def __rmul__(self, scalar):
+        return self * scalar
+
     @staticmethod
     def check_dimensions(self, other):
         """
@@ -71,7 +86,24 @@ class Matrix2D:
         except ValueError:
             raise Matrix2DException(f"Number of rows are mismatched {len(self)} needs to equal {len(other)} ")
 
+    @staticmethod
+    def shape(matrix):
+      """
+      Computes the shape of an input matrix
 
+      Background: `len()` providees the number of rows in a matrix. In any Matrix2D object we calculate the columns
+      based on the length of the inner list
+      
+      :param matrix: Input matrix (or vector) object
+      """
+      num_rows = len(matrix)
+      get_col_num = [len(row) for row in matrix]
+      check_cols = all(x == get_col_num[0] for x in get_col_num)
+      if not check_cols:
+            raise Matrix2DException("The matrix is improperly structured; one row has more columns than the others")
+      num_cols = get_col_num[0] 
+
+      return (num_rows, num_cols)
 
 a = Matrix2D([[4, 5, 6],
             [1, 2, 3], 
