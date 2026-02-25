@@ -113,7 +113,7 @@ class Matrix2D:
         for row_one, row_two in zip(matrix2d_output, numpy_output):
             for r1, r2 in zip(row_one, row_two):
                 if r1 != r2:
-                    raise Matrix2DException(f"There is a mismatch between output values: {r1 != r2}")
+                    raise Matrix2DException(f"There is a mismatch between output values: {r1, r2}")
         return True
 
     @property

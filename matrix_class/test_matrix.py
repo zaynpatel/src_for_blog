@@ -1,33 +1,18 @@
-# import numpy as np
+from matrix import Matrix2D, Matrix2DException
 
-# t1_np = np.array([[4, 5, 6],
-#       [1, 2, 3], 
-#       [7, 8, 9]])
-
-# t2_np = np.array([[1, 2, 5],
-#       [9, 7, 2],
-#       [1, 4, 6]])
-
-# Square
+import numpy as np
 
 t1 = [[4, 5, 6],
       [1, 2, 3], 
       [7, 8, 9]]
 
+v1 = [[1], [0], [0]]
+v2 = [[1, 1, 2]]
+v3 = [[1], [1], [2]]
+
 t2 = [[1, 2, 5],
       [9, 7, 2],
       [1, 4, 6]]
-
-# More columns, less rows
-t3 = [[4, 5, 6, 4, 5],
-      [1, 2, 3, 3, 2], 
-      [7, 8, 9, 1, 10]]
-
-t4 = [[1, 2, 5],
-      [9, 7, 2],
-      [1, 4, 6]]
-
-# Less columns, more rows
 
 t5 = [[4, 5, 6],
       [1, 2, 3], 
@@ -35,73 +20,30 @@ t5 = [[4, 5, 6],
       [10, 12, 14],
       [15, 17, 18]]
 
-t6 = [[1, 2, 5],
-      [9, 7, 2],
-      [1, 4, 6]]
-
-# I have a feeling this will only track rows but not column mismatches
+# Test 1: Confirm we get errors with mismatched matrices
 # try:
-#     for i, v in zip(t5, t6, strict=True):
-#         if len(i) != len(v):  # Maybe this fixes column errors too?
-#             # Because strict=True catches row mismatches and len catches column mismatches
-#             raise ValueError("There is a column mismatch")
-#         print(i, v)
-# except ValueError:
-#     raise (f"Rows mismatch")
+#       Matrix2D(t1) @ Matrix2D(t5)
+# except Matrix2DException:
+#       print("Caught correct exception")
 
-t = []
-# for m1, m2 in zip(t1, t2, strict=True):
-#     for i, v in zip(m1, m2, strict=True):
-#         # Ok if this works and aligns things then I need a way to sum() and save these in a matrix
-#         # i, v is a tuple (num1, num2) so I need a way to access these and add
-#         entry = sum((i, v))
-#         t.append(entry)
+# Test 2: Mat-vec multiplication
+mv = Matrix2D(t1) @ Matrix2D(v1)
+mv_np = np.array(t1) @ np.array(v1)
+assert Matrix2D.confirm_output(mv, mv_np) == True
 
-# for m1, m2 in zip(t1, t2, strict=True):
-#       tmp = []
-#       # The nested loop does not maintain any structure of the rows so I think I need a temp store to maintain row integrity
-#       for i, v in zip(m1, m2, strict=True):
-#             tmp.append(i + v)
-#       t.append(tmp)
+# Test 3: Vec-mat multiplication
+vm = Matrix2D(v2) @ Matrix2D(t1)
+vm_np = np.array(v2) @ np.array(t1)
+assert Matrix2D.confirm_output(vm, vm_np) == True
 
-# print(t)  # Ok so this nested loop structure is more correct. Nice! But it's not formatted like numpy on output. Seems like a str display thing?
+# Test 4: Mat-mat multiplication
+mm = Matrix2D(t1) @ Matrix2D(t2)
+mm_np = np.array(t1) @ np.array(t2)
+assert Matrix2D.confirm_output(mm, mm_np)
 
-# for m1, m2 in zip(t1, t2, strict=True):
-#       tmp = []
-#       # The nested loop does not maintain any structure of the rows so I think I need a temp store to maintain row integrity
-#       for i, v in zip(m1, m2, strict=True):
-#             tmp.append(i + v)
-#       t.append(tmp)
+# Test 5: Shape property
+m_v1 = Matrix2D(v1)
+assert m_v1.shape == (3, 1)
 
-# s = [[i + v for i, v in zip(m1, m2, strict=True)] for m1, m2 in zip(t1, t2, strict=True)]
-# print(s)
-
-t1 = [[4, 5, 6],
-      [1, 2, 3], 
-      [7, 8, 9]]
-
-t2 = [[1, 2, 5],
-      [9, 7, 2],
-      [1, 4, 6]]
-
-f = [] # The winning one
-for row in t1:
-      tmp = []
-      for col in zip(*t2):
-            tmp.append(sum(x * y for x, y in zip(row, col)))
-      f.append(tmp)
-
-print(f)
-
-
-# for r in t1:
-#       tmp = []
-#       for c in zip(*t2):
-#             tmp.append(sum((x * y for x, y in zip(row, col))))
-#       f.append(tmp)
-# print(f)
-
-
-
-# import numpy as np
-# print(np.array(t1) @ np.array(t2))
+m_t2 = Matrix2D(t2)
+assert m_t2.shape == (3, 3)
