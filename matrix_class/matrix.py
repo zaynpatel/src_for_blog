@@ -63,6 +63,24 @@ class Matrix2D:
 
     def __rmul__(self, scalar):
         return self * scalar
+    
+    def __matmul__(self, other):
+        try:
+            final = []
+            for row_idx, row in enumerate(self):
+                tmp = []
+                for col_idx, col in enumerate(other):
+                        row_col_mult = []
+                        for num_idx, num in enumerate(row):
+                            row_col_mult.append(num * other[num_idx][col_idx])
+                        tmp.append(sum(row_col_mult))
+                final.append(tmp)
+            return final
+        except TypeError:
+            return NotImplemented
+    
+    def __rmatmul__(self, other):
+        return self @ other
 
     @staticmethod
     def check_dimensions(self, other):
