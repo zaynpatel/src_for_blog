@@ -1,13 +1,10 @@
 from typing import List
 
-# TODO: Need to build vector class for vector, matrix operations
-
 class Matrix2DException(Exception):
     pass
 
 class Matrix2D:
     def __init__(self, components: List[List]):
-        # TODO: Add a check to make sure we get a nested list passed in
         self.components = [[r for r in row] for row in components]  # [[thing inner loop] outer loop]
         assert id(self.components) != id(components)  # Confirm a copy has been made
 
@@ -38,8 +35,6 @@ class Matrix2D:
     def __add__(self, other):
         self.check_dimensions(self, other)
         try:
-            #TODO: Maybe rename these later
-            # Ok so this is a generator expression. Think about this more. 
             # We return a new Matrix2D object because we do not want to modify the existing self, other (per textbook)
             return Matrix2D((col_one + col_two for col_one, col_two in zip(row_one, row_two, strict=True)) 
                             for row_one, row_two in zip(self, other, strict=True))
@@ -86,7 +81,7 @@ class Matrix2D:
         except ValueError:
             raise Matrix2DException(f"Number of rows are mismatched {len(self)} needs to equal {len(other)} ")
 
-    @staticmethod
+    @property
     def shape(matrix):
       """
       Computes the shape of an input matrix
