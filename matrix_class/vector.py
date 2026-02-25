@@ -26,7 +26,6 @@ class Vector:
         return len(self.components)
 
     def __add__(self, other):
-        # One thought is that this passes a generator expression and the list iterates through this and gives just a list of the components
         try:
             return Vector(self_num + other_num for self_num, other_num in zip(self, other, strict=True))
         except TypeError:

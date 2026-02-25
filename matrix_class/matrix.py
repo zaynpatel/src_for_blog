@@ -63,17 +63,18 @@ class Matrix2D:
 
     def __rmul__(self, scalar):
         return self * scalar
-    
+
     def __matmul__(self, other):
+        self_cols = self.shape[1]
+        other_rows = other.shape[0]
+        if self_cols != other_rows:
+            raise Matrix2DException(f"Matrix multiplication must have rows: {other_rows} equal to columns: {self_cols}")
         try:
             final = []
-            for row_idx, row in enumerate(self):
+            for row in self:
                 tmp = []
-                for col_idx, col in enumerate(other):
-                        row_col_mult = []
-                        for num_idx, num in enumerate(row):
-                            row_col_mult.append(num * other[num_idx][col_idx])
-                        tmp.append(sum(row_col_mult))
+                for col in zip(*other):
+                        tmp.append(sum(x * y for x, y in zip(row, col)))
                 final.append(tmp)
             return final
         except TypeError:
@@ -98,6 +99,22 @@ class Matrix2D:
                     raise ValueError(f"Number of columns are mismatched: {len(row_one)} needs to equal {len(row_two)}")
         except ValueError:
             raise Matrix2DException(f"Number of rows are mismatched {len(self)} needs to equal {len(other)} ")
+    
+    @staticmethod
+    def confirm_output(matrix2d_output, numpy_output):
+        """
+        Confirm the output of two matrices (one from Matrix2D class and another from numpy)
+        
+        :param matrix2d_output: Output from a Matrix2D matmul
+        :param numpy_output: Output from a numpy matmul
+
+        This is implemented because `Matrix2D` does not have an `.all()` method and I am not implementing one now
+        """
+        for row_one, row_two in zip(matrix2d_output, numpy_output):
+            for r1, r2 in zip(row_one, row_two):
+                if r1 != r2:
+                    raise Matrix2DException(f"There is a mismatch between output values: {r1 != r2}")
+        return True
 
     @property
     def shape(matrix):
