@@ -1,3 +1,5 @@
+from matrix import Matrix2D
+
 class VectorException(Exception):
     pass
 
@@ -8,10 +10,10 @@ class Vector:
 
     def __iter__(self):
         return iter(self.components)
-    
+
     def __repr__(self):
         return f"Vector({self.components})"
-    
+
     def __getitem__(self, index):
         return self.components[index]
 
@@ -42,7 +44,7 @@ class Vector:
             return Vector(self_num - other_num for self_num, other_num in zip(self, other, strict=True))
         except TypeError:
             return NotImplemented
-    
+
     def __rsub__(self, other):
         return self - other
 
@@ -56,11 +58,25 @@ class Vector:
         return self * other
 
     def __matmul__(self, other):
-        try:
-            return sum(self_num * other_num for self_num, other_num in zip(self, other, strict=True))
-        except TypeError:
-            return NotImplemented
-    
+        # Choose appropriate matmul based on shapes
+        self_rows, self_cols = self.shape
+        other_rows, other_cols = other.shape
+        if self_cols != other_rows:
+            raise VectorException(f"Matrix multiplication must have rows: {other_rows} equal to columns: {self_cols}")
+        if self_rows == 1 and other_cols == 1:
+            try:
+                return Vector([sum([vec1 * vec2[0] for vec1, vec2 in zip(self, other, strict=True)])])
+            except TypeError:
+                return NotImplemented
+        # Handle row vector case since we designed Vector to work with row-vectors and matrices
+        elif self_rows != other_cols:
+            return Vector(sum(num * v2_num for num, v2_num in zip(col, self)) for col in zip(*other))
+        # Handle outer product even though we return Matrix2D attribute
+        elif self_cols == 1 and other_rows == 1:
+            return Matrix2D(self) @ Matrix2D([other])
+        else:
+            raise VectorException("Matmul can only do inner and outer product and row-vector * matrix")
+        
     def __rmatmul__(self, other):
         return self @ other
 
@@ -70,6 +86,11 @@ class Vector:
       # It should be more helpful
       """Check if the input object is nested or not"""
       return any(isinstance(i, list) for i in obj)
+
+    @staticmethod
+    def dot_product(self, other):
+        #TODO: Need to add support for column vectors to remain consistent or remove support for column vectors elsewhere
+        return sum(self_num * other_num for self_num, other_num in zip(self, other, strict=True))
 
     @property
     def shape(vector):

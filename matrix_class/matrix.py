@@ -39,7 +39,7 @@ class Matrix2D:
             return Matrix2D((col_one + col_two for col_one, col_two in zip(row_one, row_two, strict=True)) 
                             for row_one, row_two in zip(self, other, strict=True))
         except TypeError:
-            return NotImplemented  # Make sure to mention what this means in article
+            return NotImplemented
 
     def __radd__(self, other):
         return self + other
@@ -70,13 +70,7 @@ class Matrix2D:
         if self_cols != other_rows:
             raise Matrix2DException(f"Matrix multiplication must have rows: {other_rows} equal to columns: {self_cols}")
         try:
-            final = []
-            for row in self:
-                tmp = []
-                for col in zip(*other):
-                        tmp.append(sum(x * y for x, y in zip(row, col)))
-                final.append(tmp)
-            return final
+            return Matrix2D((sum(x * y for x, y in zip(row, col)) for col in zip(*other)) for row in self)
         except TypeError:
             return NotImplemented
     
@@ -134,24 +128,3 @@ class Matrix2D:
       num_cols = get_col_num[0] 
 
       return (num_rows, num_cols)
-
-a = Matrix2D([[4, 5, 6],
-            [1, 2, 3], 
-            [7, 8, 9]])
-
-a2 = Matrix2D([[4, 12, 6],
-            [1, 2, 3], 
-            [7, 8, 9]])
-
-b = Matrix2D([[1, 2, 5, 4],
-            [9, 7, 2, 5],
-            [1, 4, 6, 9]])
-
-#c = a - b  # Output --> Matrix2D([[5, 7, 11], [10, 9, 5], [8, 12, 15]])
-
-# Test 1: See what happens without __radd__ (comment it out)
-# t1 = [[0, 0, 1], [0, 1, 0], [1, 0, 0]] + a
-# print(t1) --> Output: TypeError: can only concatenate list (not "Matrix2D") to list. This is expected!
-
-# Test 2: Uncomment __radd__ and check
-# print(t1) # --> Output: Matrix2D([[4, 5, 7], [1, 3, 3], [8, 8, 9]]). This is also expected!
