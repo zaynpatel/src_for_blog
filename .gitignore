@@ -1,0 +1,6 @@
+/matrix_class/__pycache__
+
+# Ignore venv
+blog_src
+
+.DS_Store

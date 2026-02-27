@@ -29,6 +29,8 @@ class Vector:
 
     def __add__(self, other):
         try:
+            if Vector.is_nested(self) or Vector.is_nested(other):
+                raise NotImplementedError("`Vector()` does not currently support addition of column vectors. Use row vectors instead.")
             return Vector(self_num + other_num for self_num, other_num in zip(self, other, strict=True))
         except TypeError:
             return NotImplemented
@@ -41,6 +43,8 @@ class Vector:
 
     def __sub__(self, other):
         try:
+            if Vector.is_nested(self) or Vector.is_nested(other):
+                raise NotImplementedError("`Vector()` does not currently support subtraction of column vectors. Use row vectors instead.")
             return Vector(self_num - other_num for self_num, other_num in zip(self, other, strict=True))
         except TypeError:
             return NotImplemented
@@ -50,6 +54,8 @@ class Vector:
 
     def __mul__(self, scalar):
         try:
+            if Vector.is_nested(self):
+                raise NotImplementedError("`Vector()` does not currently support scalar multiplication with column vectors. Use row vectors instead.")
             return Vector(scalar * self_num for self_num in self)
         except TypeError:
             return NotImplemented
@@ -82,15 +88,14 @@ class Vector:
 
     @staticmethod
     def is_nested(obj):
-      #TODO: Find a way to use this. I don't like the TypeError raised for addition between nested/unnested list
-      # It should be more helpful
       """Check if the input object is nested or not"""
       return any(isinstance(i, list) for i in obj)
 
     @staticmethod
-    def dot_product(self, other):
-        #TODO: Need to add support for column vectors to remain consistent or remove support for column vectors elsewhere
-        return sum(self_num * other_num for self_num, other_num in zip(self, other, strict=True))
+    def dot_product(self, other: Vector):
+        if not Vector.is_nested(self) and not Vector.is_nested(other):
+            return sum(self_num * other_num for self_num, other_num in zip(self, other, strict=True))
+        return sum(self_num[0] * other_num[0] for self_num, other_num in zip(self, other, strict=True))
 
     @property
     def shape(vector):

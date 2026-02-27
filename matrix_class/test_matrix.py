@@ -7,7 +7,10 @@ t1 = [[4, 5, 6],
       [1, 2, 3], 
       [7, 8, 9]]
 
-v1 = [[1], [0], [0]]
+v1 = [[1], [0], [2]]
+v100 = [[5], [0], [2]]
+v1_np = [1, 0, 2]
+v100_np = [5, 0, 2]
 
 vv3 = [[1], [1], [2]]
 
@@ -28,9 +31,10 @@ except Matrix2DException:
       print("Caught correct exception")
 
 # Test 2: Mat-vec multiplication
-mv = Matrix2D(t1) @ Matrix2D(v1)
+mv = Matrix2D(t1) @ Vector(v1)
 mv_np = np.array(t1) @ np.array(v1)
 assert Matrix2D.confirm_output(mv, mv_np) == True
+assert isinstance(mv, Matrix2D)
 
 # Test 3: Vec-mat multiplication
 v2 = Vector([1, 1, 2])
@@ -50,6 +54,8 @@ assert Matrix2D.confirm_output(mm, mm_np)
 # Test 5: Shape property
 m_v1 = Matrix2D(v1)
 assert m_v1.shape == (3, 1)
+v_v1 = Vector([[3], [0]])
+assert v_v1.shape == (2, 1)
 
 # Test 6: Outer product -> matrix
 # Subject to change. Numpy doesn't do outer products with 1D arrays, needs 2D for the row vector since their shapes are defined differently
@@ -67,9 +73,8 @@ v_rv_np = v_np @ rv_np
 assert isinstance(v_rv, Matrix2D)
 assert Matrix2D.confirm_output(v_rv, v_rv_np)
 
-# Test 7: Dot product (in numpy this is treated as column vec * column vec. But in our paradigm this is row vec * row vec so that needs to change)
-column_vector = Vector([4, 5, 8, 10])
-column_vector_two = Vector([0, 0, 1, 0])
-assert Vector.dot_product(column_vector, column_vector_two)  == np.dot(column_vector, column_vector_two)
-
+# Test 7: Dot product
+column_vector = Vector(v1)
+column_vector_two = Vector(v100)
+assert Vector.dot_product(Vector(v1), Vector(v100))  == np.dot(v1_np, v100_np)
 print("All tests passed!")
